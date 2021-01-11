@@ -54,40 +54,40 @@ class Handler extends ExceptionHandler
     public function render($request, Throwable $exception)
     {
        ## http exception
-       if($exception instanceof HttpException) 
-       {
+        if($exception instanceof HttpException) 
+        {
            $code = $exception->getStatusCode();
            $message = Response::$statusTexts[$code];
            return $this->errorResponse($message, $code);
-       }
+        }
       
-       ## Model not found exception
-       if($exception instanceof ModelNotFoundException) 
-       {
-           $model = strtolower(class_basename($exception->getModel()));
-           $message = "Does not exist any instance of {$model} with the given id";
-           return $this->errorResponse($message, Response::HTTP_NOT_FOUND);
-       }
+        ## Model not found exception
+        if($exception instanceof ModelNotFoundException) 
+        {
+            $model = strtolower(class_basename($exception->getModel()));
+            $message = "Does not exist any instance of {$model} with the given id";
+            return $this->errorResponse($message, Response::HTTP_NOT_FOUND);
+        }
 
-       ## Authorization exception
-       if($exception instanceof AuthenticationException) 
-       {
-           return $this->errorResponse($exception->getMessage(), Response::HTTP_UNAUTHORIZED);
-       }
-       
-       ## Validation exception
-       if($exception instanceof ValidationException) 
-       {
-           $errors = $exception->validator->errors()->getMessages();
-           return $this->errorResponse($errors, Response::HTTP_UNPROCESSABLE_ENTITY);
-       }
+        ## Authorization exception
+        if($exception instanceof AuthenticationException) 
+        {
+            return $this->errorResponse($exception->getMessage(), Response::HTTP_UNAUTHORIZED);
+        }
+        
+        ## Validation exception
+        if($exception instanceof ValidationException) 
+        {
+            $errors = $exception->validator->errors()->getMessages();
+            return $this->errorResponse($errors, Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
 
-       ## If above noting fall and in production mode just return default exception
-       if(env('APP_DEBUG',false))
-       {
-           return parent::render($request, $exception);
-       }
+        ## If above noting fall and in production mode just return default exception
+        if(env('APP_DEBUG',false))
+        {
+            return parent::render($request, $exception);
+        }
 
-       return $this->errorResponse('Unexpected error. Try again.',Response::HTTP_INTERNAL_SERVER_ERROR);
+        return $this->errorResponse('Unexpected error. Try again.',Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 }
